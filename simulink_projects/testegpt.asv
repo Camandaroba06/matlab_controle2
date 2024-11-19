@@ -1,0 +1,51 @@
+clear;
+clc;
+close all;
+s = tf('s');
+Vin = 12;
+L = 0.001;
+Cap = 3.3e-6;
+R = 12;
+
+% Definir as matrizes do sistema
+A = [(-1/(R*Cap)) 1/Cap; -1/L 0];
+B = [0; Vin/L];
+C = [0 0];
+D = [0];
+
+% Criar o sistema de espaço de estados
+sys = ss(A, B, C, D);
+
+% Verificar a controlabilidade
+controlab_vet = [B A*B];
+disp('Rank da matriz de controlabilidade:');
+disp(rank(controlab_vet));
+
+% Definir polos desejados
+poles = [-8 + 10.91501083i -8 - 10.91501083i];
+
+% Calcular os ganhos de realimentação de estados usando a função acker
+K = acker(A, B, poles);
+
+% Ajustar a matriz A do sistema com realimentação de estados
+A_k = A - B*K;
+
+% Atualizar a matriz B para o sistema com realimentação de estados
+B_k = [0; 1];
+
+% Criar o sistema com realimentação de estados
+C_k = C;
+D_k = 0;
+sys_k = ss(A_k, B_k, C_k, D_k);
+
+% Plotar o diagrama de lugar das raízes
+figure;
+rlocus(sys_k);
+grid on;
+title('Diagrama de Root Locus da Função de Transferência sys_k');
+
+% Plotar a resposta ao degrau
+figure;
+step(sys_k);
+grid on;
+title('Resposta ao Degrau da Função de Transferência sys_k');

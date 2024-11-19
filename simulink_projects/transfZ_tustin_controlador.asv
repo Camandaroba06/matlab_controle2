@@ -1,0 +1,14 @@
+s = tf('s');
+Cs = ((20/100.6)*(s+10))/(s+20)
+G_sis = 100.6/(s+10)
+
+Ts = 0.02;
+
+Cz = c2d(Cs, Ts, 'tustin')
+
+step(Cz)
+hold on;
+step(Cs)
+
+
+step()
